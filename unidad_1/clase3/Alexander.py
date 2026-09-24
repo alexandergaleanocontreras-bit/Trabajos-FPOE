@@ -23,4 +23,4 @@ frame.focus_set()
 
 principal.protocol('WM_DELETE_WINDOW', el_usuario_quiere_salir)
 
-principal.mainloop()
+principal.mainloop()  
