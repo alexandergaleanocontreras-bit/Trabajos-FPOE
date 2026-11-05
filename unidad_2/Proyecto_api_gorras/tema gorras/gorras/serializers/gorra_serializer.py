@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from academico.models.gorra import Gorra
+from gorras.models.gorra import Gorra
 
 class GorraSerializer(serializers.ModelSerializer):
     class Meta:
