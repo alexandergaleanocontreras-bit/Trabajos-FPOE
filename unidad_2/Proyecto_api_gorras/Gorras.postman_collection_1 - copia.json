@@ -1,0 +1,259 @@
+{
+  "info": {
+    "_postman_id": "f3db990e-3398-4b3b-9944-29971f82aba0",
+    "name": "Gorras",
+    "description": "Pruebas de la REST API del proyecto Gorras (Django REST Framework).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "59436037",
+    "_collection_link": "https://go.postman.co/collection/59436037-f3db990e-3398-4b3b-9944-29971f82aba0?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "1. Crear gorra",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Responde 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "const datos = pm.response.json();",
+              "pm.collectionVariables.set(\"gorra_id\", datos.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"nombre\": \"Snapback Classic\",\n    \"marca\": \"New Era\",\n    \"precio\": \"25.00\",\n    \"stock\": 10\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/gorras/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "gorras",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "2. Listar gorras",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Responde 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Devuelve una lista\", function () {",
+              "    pm.expect(pm.response.json()).to.be.an(\"array\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/gorras/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "gorras",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "3. Consultar gorra",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Responde 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/gorras/{{gorra_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "gorras",
+            "{{gorra_id}}",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "4. Reemplazar gorra (PUT)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Responde 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"nombre\": \"Snapback Premium\",\n    \"marca\": \"New Era\",\n    \"precio\": \"35.00\",\n    \"stock\": 15\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/gorras/{{gorra_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "gorras",
+            "{{gorra_id}}",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "5. Modificar stock (PATCH)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Responde 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"stock\": 20\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/gorras/{{gorra_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "gorras",
+            "{{gorra_id}}",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "6. Eliminar gorra (DELETE)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Responde 204 No Content\", function () {",
+              "    pm.response.to.have.status(204);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/gorras/{{gorra_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "gorras",
+            "{{gorra_id}}",
+            ""
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000/api"
+    },
+    {
+      "key": "gorra_id",
+      "value": ""
+    }
+  ]
+}
