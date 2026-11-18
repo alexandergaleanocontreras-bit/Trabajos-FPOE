@@ -1,4 +1,4 @@
-from controladores.comunicacion import Comunicacion, ErrorComunicacion
+from modelos.comunicacion import Comunicacion, ErrorComunicacion
 
 comunicacion = Comunicacion()
 datos = {

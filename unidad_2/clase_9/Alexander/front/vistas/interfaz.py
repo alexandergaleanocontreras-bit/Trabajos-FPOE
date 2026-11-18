@@ -1,10 +1,11 @@
+import re
 import tkinter as tk
 from tkinter import messagebox
-from controladores.validaciones import Validaciones
-from controladores.comunicacion import Comunicacion, ErrorComunicacion
+from modelos.comunicacion import Comunicacion, ErrorComunicacion
 from modelos.gorra import Gorra
 
 ROJO = '#b00020'
+
 
 class Interfaz():
 
@@ -12,16 +13,24 @@ class Interfaz():
         self.ventana_principal = tk.Tk()
         self.gorra = Gorra(self.ventana_principal)
         self.comunicacion = Comunicacion()
-        self.labels_error = []
 
-    def al_soltar_tecla(self, validacion, label_error):
-        label_error.config(text=validacion() or '')
+        self.talla = tk.StringVar(self.ventana_principal, value='M')
+        self.visera = tk.StringVar(self.ventana_principal, value='Plana')
+        self.material = tk.StringVar(self.ventana_principal, value='Algodon')
+        self.cierre = tk.StringVar(self.ventana_principal, value='Snapback')
 
     def accion_guardar(self):
-        errores = Validaciones.validarGorra(self.gorra)
-        if errores:
-            messagebox.showwarning('Revise los datos', '\n'.join(errores))
+        patron = r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$'
+        material_texto = self.material.get().strip()
+
+        if not re.match(patron, material_texto):
+            messagebox.showerror('Error', 'El material debe tener solo letras')
             return
+
+        self.gorra.marca.set(f"{self.cierre.get()} - Talla {self.talla.get()}")
+        self.gorra.color.set(f"{material_texto} - Visera {self.visera.get()}")
+        self.gorra.precio.set('35000')
+        self.gorra.stock.set('1')
 
         try:
             creada = self.comunicacion.crear('gorras', self.gorra.a_diccionario())
@@ -29,59 +38,42 @@ class Interfaz():
             messagebox.showerror('No se pudo guardar', str(error))
             return
 
-        messagebox.showinfo(
-            'Guardado',
-            f"Gorra '{creada['marca']} - {creada['color']}' guardada con el ID {creada['id']}.",
+        info = (
+            f"Talla: {self.talla.get()}\n"
+            f"Visera: {self.visera.get()}\n"
+            f"Material: {material_texto}\n"
+            f"Cierre: {self.cierre.get()}\n"
+            f"ID en BD: {creada['id']}"
         )
-        self.accion_limpiar()
-
-    def accion_limpiar(self):
-        self.gorra.limpiar()
-        for label_error in self.labels_error:
-            label_error.config(text='')
+        messagebox.showinfo('Datos Guardados', info)
 
     def al_cerrar(self):
         if messagebox.askyesno('Salir', '¿Seguro que quieres cerrar la aplicación?'):
             self.ventana_principal.destroy()
 
-    def crear_campo(self, texto, variable, validacion):
-        label = tk.Label(self.ventana_principal, text=texto)
-        entry = tk.Entry(self.ventana_principal, textvariable=variable, width=35)
-        label_error = tk.Label(self.ventana_principal, text='', fg=ROJO)
-        entry.bind('<KeyRelease>', lambda evento: self.al_soltar_tecla(validacion, label_error))
-
-        label.pack(anchor='w')
-        entry.pack(anchor='w')
-        label_error.pack(anchor='w')
-        self.labels_error.append(label_error)
-
     def mostrar_interfaz(self):
-        gorra = self.gorra
-        self.ventana_principal.title('Gestión de Gorras')
-        self.ventana_principal.geometry('360x380')
-        self.ventana_principal.configure(padx=16, pady=12)
+        self.ventana_principal.title('Gorra - Registro')
+        self.ventana_principal.geometry('350x300')
 
-        self.crear_campo(
-            'Marca', gorra.marca,
-            lambda: Validaciones.validarTexto(gorra.marca.get(), 'Marca', 100),
-        )
-        self.crear_campo(
-            'Color', gorra.color,
-            lambda: Validaciones.validarTexto(gorra.color.get(), 'Color', 50),
-        )
-        self.crear_campo(
-            'Precio (ej. 25000.00)', gorra.precio,
-            lambda: Validaciones.validarDecimal(gorra.precio.get(), 'Precio'),
-        )
-        self.crear_campo(
-            'Stock (Cantidad)', gorra.stock,
-            lambda: Validaciones.validarEntero(gorra.stock.get(), 'Stock', 0),
-        )
+        tk.Label(self.ventana_principal, text='Talla:').grid(row=0, column=0, padx=15, pady=12, sticky='w')
+        opciones_talla = ['S', 'M', 'L', 'XL']
+        tk.OptionMenu(self.ventana_principal, self.talla, *opciones_talla).grid(row=0, column=1, padx=10, pady=12)
 
-        boton_guardar = tk.Button(self.ventana_principal, text='Guardar', command=self.accion_guardar)
-        boton_limpiar = tk.Button(self.ventana_principal, text='Limpiar', command=self.accion_limpiar)
-        boton_guardar.pack(side='left', pady=10)
-        boton_limpiar.pack(side='left', padx=8, pady=10)
+        tk.Label(self.ventana_principal, text='Visera:').grid(row=1, column=0, padx=15, pady=12, sticky='w')
+        frame_radio = tk.Frame(self.ventana_principal)
+        frame_radio.grid(row=1, column=1, padx=10, pady=12)
+        tk.Radiobutton(frame_radio, text='Plana', variable=self.visera, value='Plana').pack(side='left')
+        tk.Radiobutton(frame_radio, text='Curva', variable=self.visera, value='Curva').pack(side='left')
+
+        tk.Label(self.ventana_principal, text='Material:').grid(row=2, column=0, padx=15, pady=12, sticky='w')
+        tk.Entry(self.ventana_principal, textvariable=self.material).grid(row=2, column=1, padx=10, pady=12)
+
+        tk.Label(self.ventana_principal, text='Cierre:').grid(row=3, column=0, padx=15, pady=12, sticky='w')
+        opciones_cierre = ['Ajustable', 'Snapback', 'Cerrada']
+        tk.OptionMenu(self.ventana_principal, self.cierre, *opciones_cierre).grid(row=3, column=1, padx=10, pady=12)
+
+        btn = tk.Button(self.ventana_principal, text='Guardar', command=self.accion_guardar)
+        btn.grid(row=4, column=0, columnspan=2, pady=18)
 
         self.ventana_principal.protocol('WM_DELETE_WINDOW', self.al_cerrar)
         self.ventana_principal.mainloop()
