@@ -1,10 +1,8 @@
-import re
 import tkinter as tk
 from tkinter import messagebox
+from controladores.validaciones import Validaciones
 from modelos.comunicacion import Comunicacion, ErrorComunicacion
 from modelos.gorra import Gorra
-
-ROJO = '#b00020'
 
 
 class Interfaz():
@@ -20,17 +18,21 @@ class Interfaz():
         self.cierre = tk.StringVar(self.ventana_principal, value='Snapback')
 
     def accion_guardar(self):
-        patron = r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$'
-        material_texto = self.material.get().strip()
-
-        if not re.match(patron, material_texto):
-            messagebox.showerror('Error', 'El material debe tener solo letras')
+        error_material = Validaciones.validarMaterial(self.material.get())
+        if error_material:
+            messagebox.showerror('Error', error_material)
             return
 
+        material_texto = self.material.get().strip()
         self.gorra.marca.set(f"{self.cierre.get()} - Talla {self.talla.get()}")
         self.gorra.color.set(f"{material_texto} - Visera {self.visera.get()}")
         self.gorra.precio.set('35000')
         self.gorra.stock.set('1')
+
+        errores = Validaciones.validarGorra(self.gorra)
+        if errores:
+            messagebox.showwarning('Revise los datos', '\n'.join(errores))
+            return
 
         try:
             creada = self.comunicacion.crear('gorras', self.gorra.a_diccionario())

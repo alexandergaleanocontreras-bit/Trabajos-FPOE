@@ -39,3 +39,12 @@ class Validaciones():
             Validaciones.validarEntero(gorra.stock.get(), 'Stock', 0),
         ]
         return [error for error in errores if error]
+
+    @staticmethod
+    def validarMaterial(valor):
+        texto = valor.strip()
+        if not texto:
+            return 'Material: falta este dato.'
+        if not re.fullmatch(r'[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+', texto):
+            return 'Material: debe tener solo letras.'
+        return None
