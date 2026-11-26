@@ -1,8 +1,5 @@
-import tkinter as tk
-from interfaz import InterfazGorra
+from vistas.interfaz import Interfaz
 
-# Punto de entrada principal de la aplicacion
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = InterfazGorra(root)
-    root.mainloop()
+if __name__ == '__main__':
+    interfaz = Interfaz()
+    interfaz.mostrar_interfaz()
